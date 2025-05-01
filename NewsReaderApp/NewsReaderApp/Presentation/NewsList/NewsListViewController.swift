@@ -1,0 +1,115 @@
+import UIKit
+
+class NewsListViewController: UIViewController {
+    private let viewModel: NewsListViewModel
+    private let tableView = UITableView()
+    private let segmentedControl = UISegmentedControl(items: [ "Business", "Technology", "Sports"])
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+    
+    init(viewModel: NewsListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        setupBindings()
+        loadNews(for: "technology")
+    }
+    
+    private func setupUI() {
+        title = "News"
+        view.backgroundColor = .systemBackground
+        
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.addTarget(self, action: #selector(categoryChanged), for: .valueChanged)
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 50))
+        headerView.addSubview(segmentedControl)
+        
+        NSLayoutConstraint.activate([
+            segmentedControl.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            segmentedControl.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
+            segmentedControl.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
+        ])
+        
+        tableView.tableHeaderView = headerView
+        
+        // Table View
+        tableView.register(NewsCell.self, forCellReuseIdentifier: NewsCell.reuseIdentifier)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 120
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        
+        // Activity Indicator
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
+    
+    private func setupBindings() {
+        viewModel.onNewsUpdated = { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+                self?.activityIndicator.stopAnimating()
+            }
+        }
+        
+        viewModel.onError = { [weak self] error in
+            DispatchQueue.main.async {
+                self?.activityIndicator.stopAnimating()
+                self?.showErrorAlert(message: error.localizedDescription)
+            }
+        }
+    }
+    
+    @objc private func categoryChanged(_ sender: UISegmentedControl) {
+        let categories = ["technology", "business", "sports", "entertainment"]
+        let selectedCategory = categories[sender.selectedSegmentIndex]
+        loadNews(for: selectedCategory)
+    }
+    
+    private func loadNews(for category: String) {
+        activityIndicator.startAnimating()
+        viewModel.loadNews(for: category)
+    }
+    
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
+
+extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.news.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: NewsCell.reuseIdentifier, for: indexPath) as! NewsCell
+        cell.configure(with: viewModel.news[indexPath.row])
+        return cell
+    }
+}
+
