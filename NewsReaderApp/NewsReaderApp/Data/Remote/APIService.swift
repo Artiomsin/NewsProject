@@ -23,7 +23,7 @@ class APIService {
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .iso8601
                 let response = try decoder.decode(NewsResponseDTO.self, from: data)
-                print("\n✅ Decoded News Response:")
+                print("\n Decoded News Response:")
                 print("Articles count: \(response.articles.count)")
                 print("--------------------------------------------------")
                 for (index, article) in response.articles.enumerated() {
@@ -31,7 +31,7 @@ class APIService {
                     dateFormatter.dateFormat = "MMM d, yyyy, h:mm a"
                     let formattedDate = dateFormatter.string(from: article.publishedAt)
                     print("""
-                    📰 Article \(index + 1):
+                     Article \(index + 1):
                     Title: \(article.title)
                     Description: \(article.description ?? "No description")
                     Source: \(article.source.name)
@@ -44,7 +44,7 @@ class APIService {
                 }
                 completion(.success(response.articles))
             } catch {
-                print("❌ JSON Decoding Error: \(error.localizedDescription)")
+                print(" JSON Decoding Error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }.resume()
