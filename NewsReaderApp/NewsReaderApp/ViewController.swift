@@ -9,6 +9,7 @@ class ViewController: UITabBarController {
            super.viewDidLoad()
            setupViewControllers()
            setupTabBarAppearance()
+           ThemeManager.shared.loadSavedTheme()
        }
        
        private func setupViewControllers() {
@@ -47,5 +48,3 @@ class ViewController: UITabBarController {
                    UITabBar.appearance().tintColor = .systemBlue
        }
 }
-
-

@@ -19,28 +19,79 @@ class NewsListViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupBindings()
+        setupThemeButton()
         loadNews(for: "technology")
+        NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(themeChanged),
+                    name: .themeDidChange,
+                    object: nil
+                )
     }
+    
+    
+    @objc private func toggleTheme() {
+            let currentTheme = ThemeManager.shared.currentTheme
+            let newTheme: AppTheme
+            
+            switch currentTheme {
+            case .system:
+                newTheme = .dark
+            case .light:
+                newTheme = .dark
+            case .dark:
+                newTheme = .light
+            }
+            
+            ThemeManager.shared.setTheme(newTheme)
+        }
+    
+    @objc private func themeChanged() {
+            updateThemeButtonIcon()
+            view.backgroundColor = .systemBackground
+            tableView.backgroundColor = .systemBackground
+            tableView.reloadData()
+        }
+    
+    private func setupThemeButton() {
+           let themeButton = UIBarButtonItem(
+               image: UIImage(systemName: "moon.circle.fill"),
+               style: .plain,
+               target: self,
+               action: #selector(toggleTheme)
+           )
+           navigationItem.rightBarButtonItem = themeButton
+           updateThemeButtonIcon()
+       }
+    
+    private func updateThemeButtonIcon() {
+            let imageName: String
+            switch ThemeManager.shared.currentTheme {
+            case .system:
+                imageName = "moon.circle.fill"
+            case .light:
+                imageName = "sun.max.fill"
+            case .dark:
+                imageName = "moon.fill"
+            }
+            navigationItem.rightBarButtonItem?.image = UIImage(systemName: imageName)
+        }
     
     private func setupUI() {
         title = "News"
         view.backgroundColor = .systemBackground
-        
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(categoryChanged), for: .valueChanged)
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
-        
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 50))
         headerView.addSubview(segmentedControl)
-        
         NSLayoutConstraint.activate([
             segmentedControl.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
             segmentedControl.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -16),
             segmentedControl.centerYAnchor.constraint(equalTo: headerView.centerYAnchor)
         ])
-        
         tableView.tableHeaderView = headerView
-        
+
         // Table View
         tableView.register(NewsCell.self, forCellReuseIdentifier: NewsCell.reuseIdentifier)
         tableView.delegate = self
@@ -49,23 +100,23 @@ class NewsListViewController: UIViewController {
         tableView.estimatedRowHeight = 120
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
-        
+
         // Activity Indicator
         activityIndicator.hidesWhenStopped = true
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(activityIndicator)
-        
+
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
+
             activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
-    
+
     
     private func setupBindings() {
         viewModel.onNewsUpdated = { [weak self] in

@@ -28,9 +28,19 @@ class NewsCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupLayout()
+        setupColors()
+        NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(themeChanged),
+                    name: .themeDidChange,
+                    object: nil
+                )
+        
     }
     
-
+    @objc private func themeChanged() {
+            setupColors()
+        }
     
     private func setupColors() {
             contentView.backgroundColor = .systemBackground
