@@ -38,13 +38,11 @@ NewsReaderApp is an iOS application that allows users to read the latest news fr
 ## Screenshots
 
 ### News List Screen
-![News List](![image](https://github.com/user-attachments/assets/014005bd-8f90-44c0-b521-e74655c4f141)
-)
+![News List](https://github.com/user-attachments/assets/014005bd-8f90-44c0-b521-e74655c4f141)
 
 ### News Detail Screen
-![News Detail](![image](https://github.com/user-attachments/assets/09c947ce-cf6e-4ac7-98e3-1a867f1ae584)
-)
+![News Detail](https://github.com/user-attachments/assets/09c947ce-cf6e-4ac7-98e3-1a867f1ae584)
 
 ### Bookmarks Screen
-![Bookmarks](![image](https://github.com/user-attachments/assets/ce79a23b-1cd5-4da0-b382-beabb8fc9e2b)
-)
+![Bookmarks](https://github.com/user-attachments/assets/ce79a23b-1cd5-4da0-b382-beabb8fc9e2b)
+
