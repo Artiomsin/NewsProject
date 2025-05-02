@@ -127,12 +127,31 @@ class NewsListViewController: UIViewController {
         }
         
         viewModel.onError = { [weak self] error in
-            DispatchQueue.main.async {
-                self?.activityIndicator.stopAnimating()
-                self?.showErrorAlert(message: error.localizedDescription)
-            }
-        }
-    }
+               DispatchQueue.main.async {
+                   self?.activityIndicator.stopAnimating()
+                   
+                   let message: String
+                   switch error {
+                   case .noInternet:
+                       message = "Нет подключения к интернету."
+                   case .timeout:
+                       message = "Время ожидания истекло."
+                   case .serverError(let statusCode):
+                       message = "Ошибка сервера. Код: \(statusCode)."
+                   case .invalidResponse:
+                       message = "Некорректный ответ от сервера."
+                   case .emptyData:
+                       message = "Нет данных."
+                   case .decodingFailed:
+                       message = "Не удалось обработать данные."
+                   case .other(let err):
+                       message = err.localizedDescription
+                   }
+                   
+                   self?.showErrorAlert(message: message)
+               }
+           }
+       }
     
     @objc private func categoryChanged(_ sender: UISegmentedControl) {
         let categories = ["technology", "business", "sports", "entertainment"]

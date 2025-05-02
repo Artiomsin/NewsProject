@@ -7,8 +7,9 @@ class FetchNewsUseCase {
         self.newsRepository = newsRepository
     }
 
-    func execute(query: String, fromDate: String, sortBy: String, completion: @escaping (Result<[News], Error>) -> Void) {
+    func execute(query: String, fromDate: String, sortBy: String, completion: @escaping (Result<[News], NetworkError>) -> Void) {
         newsRepository.fetchNews(query: query, fromDate: fromDate, sortBy: sortBy, completion: completion)
     }
    
 }
+
