@@ -8,6 +8,7 @@ struct News: Codable, Equatable {
     let publishedAt: Date
     let url: String?
     let content: String?
+    let author: String?
     
     static func == (lhs: News, rhs: News) -> Bool {
         return lhs.title == rhs.title && lhs.source.name == rhs.source.name

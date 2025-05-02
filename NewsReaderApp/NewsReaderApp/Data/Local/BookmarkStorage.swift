@@ -21,10 +21,10 @@ class CoreDataBookmarkStorage: BookmarkStorage {
         bookmark.newsDescription = news.description
         bookmark.sourceName = news.source.name
         bookmark.publishedAt = news.publishedAt
-        bookmark.url = news.url
         bookmark.content = news.content
         bookmark.dateAdded = Date()
-
+        bookmark.urlToImage = news.urlToImage
+        bookmark.author = news.author
         CoreDataStack.shared.saveContext()
     }
 
@@ -52,10 +52,11 @@ class CoreDataBookmarkStorage: BookmarkStorage {
                     title: $0.title ?? "",
                     description: $0.newsDescription,
                     source: Source(name: $0.sourceName ?? ""),
-                    urlToImage: nil,
+                    urlToImage: $0.urlToImage,
                     publishedAt: $0.publishedAt ?? Date(),
                     url: $0.url,
-                    content: $0.content
+                    content: $0.content,
+                    author: $0.author
                 )
             }
         } catch {
@@ -77,5 +78,3 @@ class CoreDataBookmarkStorage: BookmarkStorage {
         }
     }
 }
-
-

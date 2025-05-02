@@ -70,8 +70,9 @@ class APIService {
                     dateFormatter.dateFormat = "MMM d, yyyy, h:mm a"
                     let formattedDate = dateFormatter.string(from: article.publishedAt)
                     print("""
-                     📰 Article \(index + 1):
+                     Article \(index + 1):
                      Title: \(article.title)
+                     Author: \(article.author ?? "No author")
                      Description: \(article.description ?? "No description")
                      Source: \(article.source.name)
                      URL to Image: \(article.urlToImage ?? "No image URL")
